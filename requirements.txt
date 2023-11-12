@@ -1,0 +1,8 @@
+dotenv
+IPython
+moviepy
+opencv-python-headless
+openai
+requests
+streamlit
+numpy
