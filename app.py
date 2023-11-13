@@ -6,8 +6,20 @@ from moviepy.audio.io.AudioFileClip import AudioFileClip
 import cv2  # We're using OpenCV to read video
 import base64
 import time
+from dotenv import load_dotenv
+from IPython.display import display, Image, Audio
+from moviepy.editor import VideoFileClip, AudioFileClip
+from moviepy.audio.io.AudioFileClip import AudioFileClip
+
+import cv2
+import base64
+import time
 import io
-import openai
+from openai import OpenAI
+
+# Replace 'your_api_key_here' with your actual OpenAI API key
+client = OpenAI(api_key='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')
+
 import os
 import requests
 
@@ -15,8 +27,8 @@ import streamlit as st
 import tempfile
 import numpy as np
 
-load_dotenv()
 
+load_dotenv()
 
 def video_to_frames(video_file):
     # Save the uploaded video file to a temporary file
@@ -48,33 +60,30 @@ def frames_to_story(base64Frames, prompt):
             "content": [
                 prompt,
                 *map(lambda x: {"image": x, "resize": 768},
-                     base64Frames[0::25]),
+                     base64Frames[0::123]),
             ],
         },
     ]
     params = {
         "model": "gpt-4-vision-preview",
         "messages": PROMPT_MESSAGES,
-        "api_key": os.environ["OPENAI_API_KEY"],
-        "headers": {"Openai-Version": "2020-11-07"},
-        "max_tokens": 500,
+        "max_tokens": 200,
     }
 
-    result = openai.ChatCompletion.create(**params)
+    result = client.chat.completions.create(**params)
     print(result.choices[0].message.content)
     return result.choices[0].message.content
-
 
 def text_to_audio(text):
     response = requests.post(
         "https://api.openai.com/v1/audio/speech",
         headers={
-            "Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}",
+            "Authorization": f"Bearer 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",
         },
         json={
             "model": "tts-1",
             "input": text,
-            "voice": "onyx",
+            "voice": "nova",
         },
     )
 
